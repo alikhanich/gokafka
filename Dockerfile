@@ -1,12 +1,7 @@
-FROM golang:1.23
-ENV LIBRDKAFKA_VERSION="v2.6.0"
+FROM golang:1.23-alpine
 # setup librdkafka
-
-RUN wget -qO - https://packages.confluent.io/deb/7.7/archive.key | apt-key add - &&\
-    echo "deb https://packages.confluent.io/deb/7.7 stable main" >> /etc/apt/sources.list.d/confluent.list &&\
-    echo "deb https://packages.confluent.io/clients/deb $(grep '^VERSION_CODENAME=' /etc/os-release | cut -d '=' -f 2) main" >> /etc/apt/sources.list.d/confluent.list &&\   
-    apt-get update &&\
-    apt-get install -y --no-install-recommends librdkafka-dev &&\
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories &&\
+    apk update  &&\
+    apk add --no-cache \
+    librdkafka=2.6.0-r0\
+    librdkafka-dev=2.6.0-r0 \
