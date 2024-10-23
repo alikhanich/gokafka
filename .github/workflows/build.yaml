@@ -2,8 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+
 jobs:
   buildx:
     runs-on: ubuntu-latest
@@ -25,5 +24,15 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract branch name
+        id: extract_branch
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "BRANCH_TAG=latest" >> $GITHUB_ENV
+          else
+            BRANCH_NAME=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
+            echo "BRANCH_TAG=${BRANCH_NAME}" >> $GITHUB_ENV
+          fi
       - name: Build the Docker image
-        run: docker buildx build --push --platform linux/amd64,linux/arm64 --tag djirik/gokafka:$BRANCH_NAME .
+        run: docker buildx build --push --platform linux/amd64,linux/arm64 --tag djirik/gokafka:$BRANCH_TAG .
