@@ -2,7 +2,8 @@ name: Docker Image CI
 
 on:
   push:
-
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
 jobs:
   buildx:
     runs-on: ubuntu-latest
@@ -19,4 +20,4 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build the Docker image
-        run: docker buildx build --push --platform linux/amd64,linux/arm64 --tag djirik/gokafka:$GITHUB_REF .
+        run: docker buildx build --push --platform linux/amd64,linux/arm64 --tag djirik/gokafka:$BRANCH_NAME .
